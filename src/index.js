@@ -15,9 +15,10 @@ app.use(express.json());
 // routes
 app.use(require('./routes'));
 app.use('/guerrilla', require('./routes/guerrilla'));
-//app.use('/attack', require('./routes/attack'));
+app.use('/attack', require('./routes/attack'));
 
 // starting the server
 app.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
 });
+app.timeout = 1000;
