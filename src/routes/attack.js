@@ -25,6 +25,7 @@ router.post('/:name', async(req, res) => {
     numBunker=arrayAtacante.buildings.bunker;
     petroleoAtacante = arrayAtacante.resources.oil;
     DineroAtacante = arrayAtacante.resources.money;
+    rankAtacante = arrayAtacante.rank;
     /*console.log('Assault: '+numAssault);
     console.log(numEngineer);
     console.log(numTank);
@@ -45,6 +46,7 @@ router.post('/:name', async(req, res) => {
     numAssaultAtacado=arrayAtacado.army.assault;
     petroleoAtacado = arrayAtacado.resources.oil;
     DineroAtacado = arrayAtacado.resources.money;
+    rankAtacado = arrayAtacado.rank;
 /*
     console.log('Bunker: '+numBunkerAtacado); //
     console.log(' : '+numTankAtacado);
@@ -119,7 +121,8 @@ router.post('/:name', async(req, res) => {
     console.log('PA_Enner :'+ PA_Engineer);
     console.log('defenzaEnner :'+ defenzaEngineer)
     console.log('URA_Enner :'+ URA_Engineer)
-
+ 
+  
 
 //ATACADO
     //URAtacante = unidad restante atacante 
@@ -186,7 +189,6 @@ router.post('/:name', async(req, res) => {
     console.log('defenzaEnner :'+ defenzaEngineer)
     console.log('URAtacanteEngineer :'+ URAtacanteEngineer)
 
-
     //Poder Ofensa y defensa 
     PoderOfensa=(numAssault*80)+(numEngineer*30)+(numTank*500)+(numBunker*0);
     PoderDefensa=(numAssaultAtacado*20)+(numEngineerAtacado*70)+(numTankAtacado*20)+(numBunkerAtacado*600);
@@ -196,6 +198,17 @@ router.post('/:name', async(req, res) => {
     oD=PoderDefensa/totalPoder;
     Di=oD+0.1;
 
+    if (PoderOfensa>PoderDefensa){  //gana atacante
+        rankAtacante= rankAtacante + 10;
+    }
+    else if(PoderOfensa<PoderDefensa){ //gana atacado
+        rankAtacado= rankAtacado + 10;
+    }
+    else{                               //quedan empate
+        rankAtacante= rankAtacante + 5;
+        rankAtacado= rankAtacado + 5;
+    }
+    
     console.log('PoderOfensa :'+ PoderOfensa)
     console.log('PoderDefensa :'+ PoderDefensa)
     console.log('totalPoder :'+ totalPoder)
@@ -240,11 +253,57 @@ router.post('/:name', async(req, res) => {
     console.log('DineroAtacado :'+ DineroAtacado)
 
 
+    if(name!='' && guerrillaSrc!=''){
+//Atacante
+        //URA_Bunker  URA_Assault URA_Tank  URA_Engineer
+        
+    const request2 = pool.request()
+    request2.input('name', sql.VarChar, guerrillaSrc)
 
+    request2.input('money', sql.Int, DineroAtacante)
+    request2.input('oil', sql.Int, petroleoAtacante)
+    request2.input('rank', sql.Int, rankAtacante)
 
+    request2.input('assault', sql.Int, URA_Assault)
+    request2.input('tank', sql.Int, URA_Tank)
+    request2.input('engineer', sql.Int, URA_Engineer)
+    request2.input('bunker', sql.Int, URA_Bunker)
+    const updatedGuerrillaAtacante = await request2.execute('updateAttack')
+    console.log(updatedGuerrillaAtacante)
+    res.status(200) 
+    res.statusMessage = 'The battle is over'; 
+    res.json(JSON.parse(parser(updatedGuerrillaAtacante)))
+
+//Atacado
+         //URAtacanteBunker URAtacanteAssault  URAtacanteTank URAtacanteEngineer
+    const request3 = pool.request()
+    request3.input('name', sql.VarChar, name)
+
+    request3.input('money', sql.Int, DineroAtacado)
+    request3.input('oil', sql.Int, petroleoAtacado)
+    request3.input('rank', sql.Int, rankAtacado)
+
+    request3.input('assault', sql.Int, URAtacanteAssault)
+    request3.input('tank', sql.Int, URAtacanteTank)
+    request3.input('engineer', sql.Int, URAtacanteEngineer)
+    request3.input('bunker', sql.Int, URAtacanteBunker)
+    const updatedGuerrillaAtacado = await request3.execute('updateAttack')
+    console.log(updatedGuerrillaAtacado)
+    res.status(200)
+    res.statusMessage = 'The battle is over'; 
+    res.json(JSON.parse(parser(updatedGuerrillaAtacado)))
 
     res.statusMessage = 'The battle is over'; 
     res.json('estas atacando a: ' + name + ',  nameSrc: '+guerrillaSrc); 
+    
+    }
+    else{
+        res.status(404);
+    res.statusMessage = 'Not found'
+    }
+
+    res.status(400);
+    res.statusMessage = 'Bad request'
 });  
   
 module.exports = router;
