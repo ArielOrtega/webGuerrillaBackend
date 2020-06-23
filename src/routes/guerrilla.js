@@ -7,8 +7,37 @@ const { request, json } = require('express');
 
 //retorna info de todas las guerrillas
 router.get('/', async (req, res) => {
+    const { faction, email, name } = req.query;
     const request = pool.request()
-    const data = await request.execute('GetGuerrillas');
+    request.input('faction', sql.VarChar, faction)
+    request.input('email', sql.VarChar, email)
+    request.input('name', sql.VarChar, name)
+    let data = ''
+    if (typeof faction !== 'undefined' && typeof email !== 'undefined' && typeof name !== 'undefined') {
+        request.input('flag', sql.Int, 0)
+        data = await request.execute('GetGuerrillasParams');
+    } else if (typeof faction == 'undefined' && typeof email !== 'undefined' && typeof name !== 'undefined') {
+        request.input('flag', sql.Int, 2)
+        data = await request.execute('GetGuerrillasParams');
+    } else if (typeof faction == 'undefined' && typeof email == 'undefined' && typeof name !== 'undefined') {
+        request.input('flag', sql.Int, 4)
+        data = await request.execute('GetGuerrillasParams');
+    } else if (typeof faction == 'undefined' && typeof email == 'undefined' && typeof name == 'undefined') {
+        request.input('flag', sql.Int, 7)
+        data = await request.execute('GetGuerrillasParams');
+    } else if (typeof faction !== 'undefined' && typeof email !== 'undefined' && typeof name == 'undefined') {
+        request.input('flag', sql.Int, 1)
+        data = await request.execute('GetGuerrillasParams');
+    } else if (typeof faction !== 'undefined' && typeof email == 'undefined' && typeof name == 'undefined') {
+        request.input('flag', sql.Int, 5)
+        data = await request.execute('GetGuerrillasParams');
+    } else if (typeof faction == 'undefined' && typeof email !== 'undefined' && typeof name == 'undefined') {
+        request.input('flag', sql.Int, 6)
+        data = await request.execute('GetGuerrillasParams');
+    }else if (typeof faction !== 'undefined' &&typeof email == 'undefined' && typeof name !== 'undefined') {
+        request.input('flag', sql.Int, 3)
+        data = await request.execute('GetGuerrillasParams');
+    }
     res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     output = parser(data)
@@ -89,8 +118,8 @@ router.put('/:name/units', async (req, res) => {
     output = parser(data)
     array = JSON.parse(output)
     resources = calculateBuy(assault, engineer, tank, bunker);
-    if( resources.moneyRequired <= array.resources.money && resources.oilRequired <= array.resources.oil && 
-        resources.peopleRequired <= array.resources.people){
+    if (resources.moneyRequired <= array.resources.money && resources.oilRequired <= array.resources.oil &&
+        resources.peopleRequired <= array.resources.people) {
         console.log('compra realizada')
         const request2 = pool.request()
         request2.input('name', sql.VarChar, name)
@@ -104,9 +133,9 @@ router.put('/:name/units', async (req, res) => {
         const updatedGuerrilla = await request2.execute('updateResources')
         console.log(updatedGuerrilla)
         res.status(200)
-        res.statusMessage='Successful transaction'
+        res.statusMessage = 'Successful transaction'
         res.json(JSON.parse(parser(updatedGuerrilla)))
-    }else{
+    } else {
         console.log('fondos insuficientes')
         res.status(402)
         res.statusMessage = 'Non-sufficient funds'
@@ -135,11 +164,11 @@ function parser(data) {
     return newResults
 }
 
-function calculateBuy(assault, engineer, tank, bunker){
+function calculateBuy(assault, engineer, tank, bunker) {
     resources = {
-        moneyRequired:0,
-        oilRequired:0,
-        peopleRequired:0
+        moneyRequired: 0,
+        oilRequired: 0,
+        peopleRequired: 0
     }
     //recursos requeridos para los asalto
     for (let i = 0; i < assault; i++) {
