@@ -81,8 +81,9 @@ router.get('/:name', async (req, res) => {
 //inserta informacion de la guerrilla que posee el nombre del parametro
 //retorna el json
 router.post('/:name', async (req, res) => {
-    const { name, email, faction } = req.body;
+    const {  email, faction } = req.body;
     const request = pool.request()
+    const { name } = req.params;
     const newGuerrilla = {
         name,
         email,
