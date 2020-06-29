@@ -339,8 +339,10 @@ router.post('/attack/:name', async(req, res) => {
     oD=PoderDefensa/totalPoder;
     Di=oD+0.1;
 
+    resultado="Perdio"
     if (PoderOfensa>PoderDefensa){  //gana atacante
         rankAtacante= rankAtacante + 10;
+        resultado="Gano"
     }
     else if(PoderOfensa<PoderDefensa){ //gana atacado
         rankAtacado= rankAtacado + 10;
@@ -435,12 +437,13 @@ router.post('/attack/:name', async(req, res) => {
     //res.json(JSON.parse(parser(updatedGuerrillaAtacado)))
 
     res.statusMessage = 'The battle is over'; 
-    //res.json('estas atacando a: ' + name + ',  nameSrc: '+guerrillaSrc); 
+    //res.json('estas atacando a: ' + name + ',  nameSrc: '+guerrillaSrc);
     results = JSON.parse(parser(updatedGuerrillaAtacante));
     guerrillas = arrayAtacante
     salida = {
         guerrillas: [guerrillas],
-        results: [results]
+        results: [results],
+        resultadoAttack: resultado
     }
     res.json(salida)
     }
