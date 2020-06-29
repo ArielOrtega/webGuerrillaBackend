@@ -146,6 +146,7 @@ router.put('/:name/units', async (req, res) => {
     res.statusMessage = 'Bad request'
 });
 
+//ataque
 router.post('/attack/:name', async(req, res) => {
     res.status(200)
     const { name } = req.params; //guerrilla por atacar
@@ -207,7 +208,7 @@ router.post('/attack/:name', async(req, res) => {
         URA_Bunker=0;
     }else{
         resultBunker=defenzaBunker-PA_Bunker;
-        URA_Bunker=Math.round(resultBunker/600); //redondear al numero menor
+        URA_Bunker=Math.floor(resultBunker/600); //redondear al numero menor
     }
 
     //atacar tank
@@ -219,7 +220,7 @@ router.post('/attack/:name', async(req, res) => {
         URA_Tank=0;
     }else{
         resultTank=defenzaTank-PA_Tank;
-        URA_Tank=Math.round(resultTank/20);//redondear al numero menor
+        URA_Tank=Math.floor(resultTank/20);//redondear al numero menor
     }
 
     //atacar engineer
@@ -231,7 +232,7 @@ router.post('/attack/:name', async(req, res) => {
         URA_Engineer=0;
     }else{
         resultEngineer=defenzaEngineer-PA_Engineer;
-        URA_Engineer=Math.round(resultEngineer/70); //redondear al numero menor
+        URA_Engineer=Math.floor(resultEngineer/70); //redondear al numero menor
     }
 
     //atacar Assault
@@ -243,7 +244,7 @@ router.post('/attack/:name', async(req, res) => {
         URA_Assault=0;
     }else{
         resultAssault=defenzaAssault-PA_Assault;
-        URA_Assault=Math.round(resultAssault/80); //redondear al numero menor
+        URA_Assault=Math.floor(resultAssault/80); //redondear al numero menor
     }
 
     console.log('ATACANTE')
@@ -277,7 +278,7 @@ router.post('/attack/:name', async(req, res) => {
         URAtacanteBunker=0;
     }else{
         result=defenzaBunker-PA_Bunker;
-        URAtacanteBunker=Math.round(result/600); //redondear al numero menor
+        URAtacanteBunker=Math.floor(result/600); //redondear al numero menor
     }
 
     //atacar tank
@@ -289,7 +290,7 @@ router.post('/attack/:name', async(req, res) => {
         URAtacanteTank=0;
     }else{
         result=defenzaTank-PA_Tank;
-        URAtacanteTank=Math.round(result/20); //redondear al numero menor
+        URAtacanteTank=Math.floor(result/20); //redondear al numero menor
     }
     //atacar engineer
     PA_Engineer=(numAssaultAtacado*0.8)+(numEngineerAtacado*0.5)+(numTankAtacado*5)+(numBunkerAtacado*5);
@@ -299,7 +300,7 @@ router.post('/attack/:name', async(req, res) => {
         URAtacanteEngineer=0;
     }else{
         result=defenzaEngineer-PA_Engineer;
-        URAtacanteEngineer=Math.round(result/70); //redondear al numero menor
+        URAtacanteEngineer=Math.floor(result/70); //redondear al numero menor
     }
 
     //atacar Assault
@@ -310,7 +311,7 @@ router.post('/attack/:name', async(req, res) => {
         URAtacanteAssault=0;
     }else{
         result=defenzaAssault-PA_Assault;
-        URAtacanteAssault=Math.round(result/80); //redondear al numero menor
+        URAtacanteAssault=Math.floor(result/80); //redondear al numero menor
     }
 
     console.log('ATACADO')
@@ -372,7 +373,7 @@ router.post('/attack/:name', async(req, res) => {
     console.log('Petroleo :'+ Petroleo)
     console.log('Dinero :'+ Dinero)
 
-    if(Petroleo>petroleoAtacado){
+    if(Petroleo>=petroleoAtacado){
         petroleoAtacante=petroleoAtacante+petroleoAtacado;  
         petroleoAtacado=0;
     }else if(Petroleo<petroleoAtacado){
@@ -409,11 +410,10 @@ router.post('/attack/:name', async(req, res) => {
     request2.input('money', sql.Int, DineroAtacante)
     request2.input('oil', sql.Int, petroleoAtacante)
     request2.input('rank', sql.Int, rankAtacante)
-
-    request2.input('assault', sql.Int, URA_Assault)
-    request2.input('tank', sql.Int, URA_Tank)
-    request2.input('engineer', sql.Int, URA_Engineer)
-    request2.input('bunker', sql.Int, URA_Bunker)
+    request2.input('assault', sql.Int, URAtacanteAssault)
+    request2.input('tank', sql.Int, URAtacanteTank)
+    request2.input('engineer', sql.Int, URAtacanteEngineer)
+    request2.input('bunker', sql.Int, URAtacanteBunker)
     const updatedGuerrillaAtacante = await request2.execute('updateAttack')
     console.log(updatedGuerrillaAtacante)
     res.status(200) 
@@ -428,11 +428,10 @@ router.post('/attack/:name', async(req, res) => {
     request3.input('money', sql.Int, DineroAtacado)
     request3.input('oil', sql.Int, petroleoAtacado)
     request3.input('rank', sql.Int, rankAtacado)
-
-    request3.input('assault', sql.Int, URAtacanteAssault)
-    request3.input('tank', sql.Int, URAtacanteTank)
-    request3.input('engineer', sql.Int, URAtacanteEngineer)
-    request3.input('bunker', sql.Int, URAtacanteBunker)
+    request3.input('assault', sql.Int, URA_Assault)
+    request3.input('tank', sql.Int, URA_Tank)
+    request3.input('engineer', sql.Int, URA_Engineer)
+    request3.input('bunker', sql.Int, URA_Bunker)
     const updatedGuerrillaAtacado = await request3.execute('updateAttack')
     console.log(updatedGuerrillaAtacado)
     res.status(200)
