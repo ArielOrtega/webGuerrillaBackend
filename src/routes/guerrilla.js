@@ -339,17 +339,18 @@ router.post('/attack/:name', async(req, res) => {
     oD=PoderDefensa/totalPoder;
     Di=oD+0.1;
 
-    resultado="Perdio"
     if (PoderOfensa>PoderDefensa){  //gana atacante
         rankAtacante= rankAtacante + 10;
-        resultado="Gano"
+        res.statusMessage = 'Gano'
     }
     else if(PoderOfensa<PoderDefensa){ //gana atacado
         rankAtacado= rankAtacado + 10;
+        res.statusMessage = 'Perdio'
     }
     else{                               //quedan empate
         rankAtacante= rankAtacante + 5;
         rankAtacado= rankAtacado + 5;
+        res.statusMessage = 'Empato'
     }
     
     console.log('PoderOfensa :'+ PoderOfensa)
@@ -379,12 +380,14 @@ router.post('/attack/:name', async(req, res) => {
         petroleoAtacante=Petroleo+petroleoAtacante;   //petroleoAtacante
     }
 
-    if(Dinero>DineroAtacado){
+    if(Dinero>=DineroAtacado){
         DineroAtacante=DineroAtacante+DineroAtacado;
         DineroAtacado=0;
+        console.log('test1')
     }else if(Dinero<DineroAtacado){
         DineroAtacado=DineroAtacado-Dinero;
         DineroAtacante= Dinero + DineroAtacante;
+        console.log('test2')
     }
 
     console.log('loot :'+ loot)
@@ -414,7 +417,7 @@ router.post('/attack/:name', async(req, res) => {
     const updatedGuerrillaAtacante = await request2.execute('updateAttack')
     console.log(updatedGuerrillaAtacante)
     res.status(200) 
-    res.statusMessage = 'The battle is over'; 
+    //res.statusMessage = 'The battle is over'; 
     //res.json(JSON.parse(parser(updatedGuerrillaAtacante)))
 
 //Atacado
@@ -433,17 +436,16 @@ router.post('/attack/:name', async(req, res) => {
     const updatedGuerrillaAtacado = await request3.execute('updateAttack')
     console.log(updatedGuerrillaAtacado)
     res.status(200)
-    res.statusMessage = 'The battle is over'; 
+    //res.statusMessage = 'The battle is over'; 
     //res.json(JSON.parse(parser(updatedGuerrillaAtacado)))
 
-    res.statusMessage = 'The battle is over'; 
+    //res.statusMessage = 'The battle is over'; 
     //res.json('estas atacando a: ' + name + ',  nameSrc: '+guerrillaSrc);
     results = JSON.parse(parser(updatedGuerrillaAtacante));
     guerrillas = arrayAtacante
     salida = {
         guerrillas: [guerrillas],
-        results: [results],
-        resultadoAttack: resultado
+        results: [results]
     }
     res.json(salida)
     }
